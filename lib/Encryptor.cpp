@@ -29,8 +29,9 @@ bool HaffmanTree::compartor::operator()(const node* l, const node* r) const {
 
 void HaffmanTree::createHeap() {
     for (int i = 0; i < 256; i++) {
-        if (chars[i].frequency > 0)
+        if (chars[i].frequency > 0) {
             heap.push_back(&chars[i]);
+        }
     }
 
     std::make_heap(heap.begin(), heap.end(), comp);
@@ -56,29 +57,25 @@ void HaffmanTree::createHeap() {
 }
 
 void HaffmanTree::createEncodeMap(const node* cur, const int16_t code, const uint8_t depth) {
-    if (cur->left) { // && cur->right
+    if (cur->left) {
         if (depth == 0) {
             createEncodeMap(cur->left, 0, static_cast<const uint8_t>(depth + 1));
             createEncodeMap(cur->right, 1, static_cast<const uint8_t>(depth + 1));
-        }
-        else {
+        } else {
             createEncodeMap(cur->left, code << 1, static_cast<const uint8_t>(depth + 1));
             createEncodeMap(cur->right, static_cast<const int16_t>(code << 1 | 1), static_cast<const uint8_t>(depth + 1));
         }
 
-    }
-    else {
+    } else {
         if (depth == 0) {
             encodeMap[cur->id] = charinfo(0, cur->frequency, 1);
-        }
-        else {
+        } else {
             encodeMap[cur->id] = charinfo(static_cast<const uint32_t>(code), cur->frequency, depth);
         }
 
     }
 }
-HaffmanTree::HaffmanTree(const std::vector<uint8_t> &input)
-{
+HaffmanTree::HaffmanTree(const std::vector<uint8_t> &input) {
     initCharFrequency(input);
     createHeap();
     encodeMap.resize(256);
@@ -90,7 +87,6 @@ charinfo HaffmanTree::operator [](uint8_t id) {
 }
 
 void Encryptor::EncryptTree(const std::vector<uint8_t> &input) {
-
     //costil alert
     for (int i = 0; i < 256; i++) {
         charinfo cur = (*encodeTree)[i];
@@ -107,8 +103,7 @@ void Encryptor::EncryptTree(const std::vector<uint8_t> &input) {
         auto info = (*encodeTree)[i];
         int cur_pos = i * 4;
         int cur_val = (info.code) << (sizeof(info.code) * 8 - info.depth);
-        for (int k = 3; k >= 0; k--)
-        {
+        for (int k = 3; k >= 0; k--) {
             output[cur_pos + k] = (uint8_t) cur_val;
             cur_val >>= 8;
         }
@@ -122,8 +117,7 @@ void Encryptor::EncryptBlock(const std::vector<uint8_t> &input) {
     uint8_t byte_cur = 0;
     uint8_t bite_cur = 8;
 
-    for (auto input_char : input)
-    {
+    for (auto input_char : input) {
         auto info = (*encodeTree)[input_char];
 
         while (info.depth > 0) {

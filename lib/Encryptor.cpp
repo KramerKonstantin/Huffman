@@ -87,7 +87,6 @@ charinfo HaffmanTree::operator [](uint8_t id) {
 }
 
 void Encryptor::EncryptTree(const std::vector<uint8_t> &input) {
-    //costil alert
     for (int i = 0; i < 256; i++) {
         charinfo cur = (*encodeTree)[i];
         if (cur.code == 0 && cur.frequency > 0) {
